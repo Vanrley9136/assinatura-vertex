@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt" ng-app="signatureApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assinatura MAXX</title>
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Assinatura MAXX - Gerador de Assinaturas MAXX">
+    <meta property="og:description" content="Crie assinaturas de e-mail personalizadas com o Gerador de Assinaturas MAXX. Adicione seu nome, cargo, e-mail, telefone e Skype para uma assinatura profissional.">
+    <meta property="og:image" content="https://www.sejamaxx.com.br/assets/img/share.jpg">
+    <meta property="og:url" content="https://yourwebsite.com/page-url">
+    <meta property="og:type" content="website">
+    <meta name="description" content="Crie assinaturas de e-mail personalizadas com o Gerador de Assinaturas MAXX. Adicione seu nome, cargo, e-mail, telefone e Skype para uma assinatura profissional.">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Assinatura MAXX - Gerador de Assinaturas MAXX">
+    <meta name="twitter:description" content="Crie assinaturas de e-mail personalizadas com o Gerador de Assinaturas MAXX. Adicione seu nome, cargo, e-mail, telefone e Skype para uma assinatura profissional.">
+    <meta name="twitter:image" content="https://www.sejamaxx.com.br/assets/img/share.jpg">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="https://cdn3d.iconscout.com/3d/premium/thumb/documento-assinado-8305329-6618324.png?f=webp" type="image/x-icon">
+    <link rel="icon" href="https://cdn3d.iconscout.com/3d/premium/thumb/documento-assinado-8305329-6618324.png?f=webp" type="image/x-icon">
+
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <!-- html2canvas for capturing screenshots -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <!-- Boxicons CSS -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style type="text/css">
+        /* Custom Fonts */
+        @font-face {
+            font-family: 'Klavika Light';
+            src: url('klavika-light.otf') format('opentype');
+            font-weight: 300;
+        }
+
+        @font-face {
+            font-family: 'Klavika Medium';
+            src: url('klavika-medium.otf') format('opentype');
+            font-weight: 500;
+        }
+
+        /* Body, Form, Div Styles */
+        body, form, div {
+            font-family: 'Klavika Medium', sans-serif;
+        }
+
+        /* Header Styles */
+        .header {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: url('https://i.postimg.cc/bwPKrvHR/wave.png') no-repeat center center;
+            background-size: cover;
+        }
+
+        /* Title Styles */
+        .header .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #383d41;
+            font-family: 'Klavika Medium', sans-serif;
+        }
+
+        /* Container Styles */
+        .container {
+            max-width: 1000px;
+            margin-top: -50px; /* Move content up to overlap header */
+        }
+
+        /* Stepper Styles */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            padding: 0 20px; /* Added padding to align the steps */
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #ddd;
+            z-index: -1;
+        }
+
+        .step.active:before {
+            background-color: #ffa000; /* Active step line color */
+        }
+
+        .step:first-child:before {
+            left: 50%; /* Only half line before the first step */
+        }
+
+        .step:last-child:before {
+            right: 50%; /* Only half line after the last step */
+        }
+
+        .step.active .step-number {
+            background-color: #ffa000;
+            color: white;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background-color: #ddd;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .step-text {
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Control Styles */
+        .control {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        /* Control Image Styles */
+        .control img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Info Section Styles */
+         .info {
+            position: absolute;
+            top: 50%;
+            right: 50px;
+            transform: translateY(-50%);
+            color: #e20c20;
+            text-align: left;
+        }
+
+        /* Name, Position, Email, Phone, Skype Styles with Icons */
+        .info .name, .info .position, .info .email, .info .phone, .info .skype {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+         .info .name i, .info .position i, .info .email i, .info .phone i, .info .skype i {
+        color: #dc3545;
+        font-size: 20px;
+        margin-right: 10px;
+    }
+
+        /* Name Styles */
+      .info .name {
+    font-weight: 700;
+    font-size: 24px;
+    color: #e20c20;
+    font-family: 'Klavika Medium', sans-serif;
+}
+
+        /* Position Styles */
+             .info .position {
+            font-size: 18px;
+            color: #e20c20;
+        }
+
+        /* Email, Phone, Skype Styles */
+        .info .email, .info .phone, .info .skype {
+            font-size: 14px;
+        }
+
+        /* Button Styles */
+        .btn-lg {
+            padding: 12px 20px;
+            font-size: 18px;
+        }
+
+        .btn-spacing {
+            margin-right: 10px; /* Spacing between buttons */
+            margin-top: 10px; /* Spacing above buttons */
+        }
+
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+        
+        /* Error Message Styles */
+        .invalid-feedback {
+            display: block;
+            color: red;
+        }
+
+        /* Animation Styles */
+        .fade-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        /* Spinner Animation */
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3rem;
+        }
+
+        /* Page Loading Animation */
+        .page-loading {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 1100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-loading.show {
+            display: flex;
+        }
+
+        .page-loading.hide {
+            display: none;
+        }
+    </style>
+</head>
+<body ng-controller="signatureController">
+    <!-- Page Loading Animation -->
+    <div class="page-loading show" id="pageLoading">
+        <div class="spinner-border text-warning" role="status">
+            <span class="sr-only">Carregando...</span>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header">
+        <div class="title">
+            <i class='bx bxs-pencil'></i> Gerador de Assinatura Vertex Systems
+        </div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stepper -->
+        <div class="stepper">
+            <div class="step" ng-class="{'active': step === 1}">
+                <div class="step-number">1</div>
+                <div class="step-text">INFORMAÇÕES BÁSICAS</div>
+            </div>
+            <div class="step" ng-class="{'active': step === 2}">
+                <div class="step-number">2</div>
+                <div class="step-text">DETALHES DE CONTATO</div>
+            </div>
+            <div class="step" ng-class="{'active': step === 3}">
+                <div class="step-number">3</div>
+                <div class="step-text">VISUALIZAR</div>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <form class="mb-4" name="signatureForm" novalidate ng-show="step === 1">
+            <div class="form-row">
+                <div class="col-md-4 mb-3">
+                    <label for="nome">Nome <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="nome" ng-model="nome" ng-class="{'is-invalid': signatureForm.nome.$touched && !nome}" name="nome" ng-change="updatePreview()" required>
+                    <div class="invalid-feedback" ng-show="signatureForm.nome.$touched && !nome">Obrigatório.</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="cargo">Cargo <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" id="cargo" ng-model="cargo" ng-class="{'is-invalid': signatureForm.cargo.$touched && !cargo}" name="cargo" ng-change="updatePreview()" required>
+                    <div class="invalid-feedback" ng-show="signatureForm.cargo.$touched && !cargo">Obrigatório.</div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="email">E-mail <span style="color: red;">*</span></label>
+                    <input type="email" class="form-control" id="email" ng-model="email" ng-class="{'is-invalid': signatureForm.email.$touched && !email}" name="email" required ng-change="updatePreview()">
+                    <div class="invalid-feedback" ng-show="signatureForm.email.$touched && !email">Obrigatório.</div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-spacing" ng-click="nextStep()" ng-disabled="!nome || !cargo || !email">Próximo</button>
+        </form>
+
+        <!-- Contact Details Section -->
+        <form class="mb-4" name="contactForm" novalidate ng-show="step === 2">
+            <div class="form-row">
+                <div class="col-md-6 mb-3">
+                    <label for="phone">Telefone</label>
+                    <input type="text" class="form-control" id="phone" ng-model="phone" name="phone" ng-change="updatePreview()" placeholder="(xx) xxxxx-xxxx ou (xx) xxxx-xxxx" oninput="formatPhoneNumber(this)">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="skype">Skype</label>
+                    <input type="text" class="form-control" id="skype" ng-model="skype" name="skype" ng-change="updatePreview()">
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-spacing" ng-click="previousStep()">Anterior</button>
+            <button type="button" class="btn btn-primary btn-spacing" ng-click="nextStep()">Próximo</button>
+        </form>
+
+        <!-- Preview Section -->
+        <div ng-show="step === 3">
+            <!-- Display Card Section -->
+            <div class="control" id="capture">
+                <img src="https://i.postimg.cc/xC8tSmM0/Design-sem-nome.png" alt="Assinatura">
+                <div class="info">
+                    <div class="name fade-in" ng-if="nome">
+                        <i class='bx bxs-user'></i> <!-- User Icon -->
+                        <span ng-bind="nome"></span>
+                    </div>
+                    <div class="position fade-in" ng-if="cargo">
+                        <i class='bx bxs-briefcase'></i> <!-- Briefcase Icon -->
+                        <span ng-bind="cargo"></span>
+                    </div>
+                    <div class="email fade-in" ng-if="email">
+                        <i class='bx bxs-envelope'></i> <!-- Envelope Icon -->
+                        <span ng-bind="email"></span>
+                    </div>
+                    <div class="phone fade-in" ng-if="phone && phone !== 'undefined'">
+                        <i class='bx bxs-phone'></i> <!-- Phone Icon -->
+                        <span ng-bind="phone"></span>
+                    </div>
+                    <div class="skype fade-in" ng-if="skype">
+                        <i class='bx bxl-skype'></i> <!-- Skype Icon -->
+                        <span ng-bind="skype"></span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-spacing" ng-click="previousStep()">Anterior</button>
+            <button type="button" class="btn btn-primary btn-spacing" onclick="captura()">Capturar</button>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="mt-4" id="canvascontainer"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <!-- Footer content can be added here if needed -->
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="spinner-border text-warning" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Aguarde, gerando imagem...</p>
+    </div>
+
+    <!-- JavaScript Functions -->
+    <script>
+        // Initialize AngularJS app
+        var app = angular.module('signatureApp', []);
+
+        // Define the controller
+        app.controller('signatureController', function($scope) {
+            // Step management
+            $scope.step = 1;
+
+            $scope.nextStep = function() {
+                $scope.step++;
+            };
+
+            $scope.previousStep = function() {
+                $scope.step--;
+            };
+
+            // Update the preview based on input changes
+            $scope.updatePreview = function() {
+                // Get all info elements
+                var infoElements = document.querySelectorAll('.info > div');
+
+                // Apply animation styles if data exists
+                infoElements.forEach(function(el) {
+                    if (el.textContent.trim() !== '') {
+                        el.classList.add('fade-in');
+                    } else {
+                        el.classList.remove('fade-in');
+                    }
+                });
+            };
+        });
+
+        // Function to capture the signature section
+        function captura() {
+            var loadingOverlay = document.getElementById('loading');
+            loadingOverlay.classList.add('show');
+            setTimeout(function() {
+                html2canvas(document.querySelector("#capture"), { useCORS: true }).then(function(canvas) {
+                    document.getElementById('canvascontainer').innerHTML = '';
+                    document.getElementById('canvascontainer').appendChild(canvas);
+                    var nome = document.getElementById('nome').value; 
+                    var link = document.createElement('a');
+                    link.download = nome + ".png";
+                    link.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+                    link.click();
+                    loadingOverlay.classList.remove('show');
+                });
+            }, 500); // delay to show loading overlay
+        }
+
+        // Function to format the phone number
+        function formatPhoneNumber(input) {
+            var phone = input.value.replace(/\D/g, '');
+            if (phone.length === 11) {
+                phone = phone.substring(0, 11); // Allow only 11 digits
+                var formattedPhone = phone.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+            } else if (phone.length === 10) {
+                phone = phone.substring(0, 10); // Allow only 10 digits for fixed lines
+                var formattedPhone = phone.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
+            } else {
+                formattedPhone = phone; // No formatting if length doesn't match
+            }
+            input.value = formattedPhone;
+        }
+
+        // Page Loading Animation
+        window.addEventListener('load', function() {
+            var pageLoading = document.getElementById('pageLoading');
+            setTimeout(function() {
+                pageLoading.classList.add('hide');
+            }, 1000); // 1 second delay before hiding the loading screen
+        });
+    </script>
+</body>
+</html>
